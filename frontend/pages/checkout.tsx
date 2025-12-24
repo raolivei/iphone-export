@@ -39,8 +39,7 @@ export default function Checkout() {
       const order = await checkoutApi.create(checkoutData);
       clearCart();
       router.push(`/order/${order.order_number}`);
-    } catch (error) {
-      console.error('Checkout failed:', error);
+    } catch {
       alert('Checkout failed. Please try again.');
     } finally {
       setLoading(false);

@@ -13,8 +13,8 @@ export default function Home() {
       try {
         const data = await productsApi.list();
         setProducts(data);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
+      } catch {
+        // Silently handle error
       } finally {
         setLoading(false);
       }

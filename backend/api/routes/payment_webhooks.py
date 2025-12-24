@@ -50,8 +50,8 @@ async def stripe_webhook(
                 try:
                     email_service = EmailService()
                     await email_service.send_payment_confirmation(order, db)
-                except Exception as e:
-                    print(f"Failed to send payment confirmation email: {e}")
+                except Exception:
+                    pass
     
     elif event["type"] == "payment_intent.payment_failed":
         payment_intent = event["data"]["object"]
@@ -103,8 +103,8 @@ async def paypal_webhook(
                 try:
                     email_service = EmailService()
                     await email_service.send_payment_confirmation(order, db)
-                except Exception as e:
-                    print(f"Failed to send payment confirmation email: {e}")
+                except Exception:
+                    pass
     
     return {"status": "success"}
 

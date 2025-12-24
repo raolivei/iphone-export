@@ -33,7 +33,6 @@ export default function AdminDashboard() {
         });
         setStats(response.data);
       } catch (error) {
-        console.error('Failed to fetch stats:', error);
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           localStorage.removeItem('admin_token');
           router.push('/admin/login');

@@ -18,8 +18,8 @@ export default function ProductDetail() {
         try {
           const data = await productsApi.get(Number(id));
           setProduct(data);
-        } catch (error) {
-          console.error('Failed to fetch product:', error);
+        } catch {
+          // Silently handle error
         } finally {
           setLoading(false);
         }

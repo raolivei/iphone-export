@@ -107,37 +107,6 @@ kubectl apply -f frontend-deployment.yaml
 kubectl rollout restart deployment/iphone-export-frontend -n iphone-export
 ```
 
-## Troubleshooting
-
-### View Logs
-
-```bash
-# API logs
-kubectl logs -n iphone-export -l app=iphone-export,component=api --tail=100
-
-# Frontend logs
-kubectl logs -n iphone-export -l app=iphone-export,component=frontend --tail=100
-
-# Database logs
-kubectl logs -n iphone-export -l app=iphone-export,component=postgres --tail=100
-```
-
-### Check Pod Status
-
-```bash
-kubectl describe pod <pod-name> -n iphone-export
-```
-
-### Access Database
-
-```bash
-# Get postgres pod
-POD_NAME=$(kubectl get pods -n iphone-export -l app=iphone-export,component=postgres -o jsonpath='{.items[0].metadata.name}')
-
-# Connect to database
-kubectl exec -it -n iphone-export $POD_NAME -- psql -U postgres -d iphone_export
-```
-
 ## Resource Limits
 
 The deployments are configured with resource limits optimized for Raspberry Pi:
@@ -149,27 +118,6 @@ The deployments are configured with resource limits optimized for Raspberry Pi:
 
 Adjust these in the deployment files if needed for your cluster.
 
-## Backup
-
-### Database Backup
-
-```bash
-# Get postgres pod
-POD_NAME=$(kubectl get pods -n iphone-export -l app=iphone-export,component=postgres -o jsonpath='{.items[0].metadata.name}')
-
-# Create backup
-kubectl exec -n iphone-export $POD_NAME -- pg_dump -U postgres iphone_export > backup-$(date +%Y%m%d).sql
-```
-
-### Restore Database
-
-```bash
-# Get postgres pod
-POD_NAME=$(kubectl get pods -n iphone-export -l app=iphone-export,component=postgres -o jsonpath='{.items[0].metadata.name}')
-
-# Restore backup
-kubectl exec -i -n iphone-export $POD_NAME -- psql -U postgres iphone_export < backup-YYYYMMDD.sql
-```
 
 
 
