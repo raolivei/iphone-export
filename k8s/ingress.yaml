@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: iphone-export-ingress
+  namespace: iphone-export
+  labels:
+    app: iphone-export
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - iphone-export.yourdomain.com
+      secretName: iphone-export-tls
+  rules:
+    - host: iphone-export.yourdomain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: iphone-export-frontend
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: iphone-export-api
+                port:
+                  number: 8000
+
+
+
+
+

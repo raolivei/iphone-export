@@ -1,0 +1,92 @@
+# iPhone Export - Docker Compose for Local Development
+# Uses port assignments from workspace-config
+
+version: "3.9"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: iphone-export-postgres
+    environment:
+      POSTGRES_DB: iphone_export
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${IPHONE_EXPORT_POSTGRES_PORT:-5436}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: iphone-export-redis
+    ports:
+      - "${IPHONE_EXPORT_REDIS_PORT:-6383}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: iphone-export-api
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/iphone_export
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: development
+    ports:
+      - "${IPHONE_EXPORT_API_PORT:-8004}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      # Hot reload: mount source code
+      - ./backend:/app/backend
+      - /app/backend/__pycache__
+    command: uvicorn backend.app.server:app --host 0.0.0.0 --port 8000 --reload
+    stdin_open: true
+    tty: true
+
+  # Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: iphone-export-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:${IPHONE_EXPORT_API_PORT:-8004}
+      NODE_ENV: development
+    ports:
+      - "${IPHONE_EXPORT_FRONTEND_PORT:-3004}:3000"
+    volumes:
+      # Hot reload: mount source code
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "npm install && npm run dev"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+
+
+
+
+

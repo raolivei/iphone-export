@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: iphone-export
+  labels:
+    app: iphone-export
+    environment: production
+
+
+
+
+
