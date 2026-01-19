@@ -28,6 +28,10 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/raolivei/iphone-export-api
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -94,6 +98,18 @@ jobs:
         run: |
           echo "Image tags:"
           echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n'
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
