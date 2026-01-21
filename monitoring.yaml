@@ -1,0 +1,32 @@
+# Monitoring Configuration for iPhone Export
+# E-commerce platform for iPhone data export services
+# Dashboard: https://grafana.eldertree.local/d/iphone-export-dashboard
+
+app:
+  name: "iPhone Export"
+  namespace: "iphone-export"
+  type: web-service
+
+  components:
+    api:
+      service: iphone-export-api
+      port: 8000
+      metrics: false
+
+    web:
+      service: iphone-export-frontend
+      port: 3000
+
+    postgres:
+      service: iphone-export-postgres
+      port: 5432
+
+    redis:
+      service: iphone-export-redis
+      port: 6379
+
+  alerts:
+    cpu_threshold: 80
+    memory_threshold: 85
+    enabled: true
+    severity: warning

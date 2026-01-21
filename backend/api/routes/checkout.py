@@ -109,9 +109,9 @@ async def create_checkout(
     try:
         email_service = EmailService()
         await email_service.send_order_confirmation(order, db)
-    except Exception as e:
-        # Log error but don't fail the order
-        print(f"Failed to send order confirmation email: {e}")
+    except Exception:
+        # Silently fail - don't block order creation
+        pass
     
     # Get order items for response
     items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
@@ -176,8 +176,8 @@ async def confirm_payment(
     try:
         email_service = EmailService()
         await email_service.send_payment_confirmation(order, db)
-    except Exception as e:
-        print(f"Failed to send payment confirmation email: {e}")
+    except Exception:
+        pass
     
     return {"message": "Payment confirmed", "order_id": order_id}
 

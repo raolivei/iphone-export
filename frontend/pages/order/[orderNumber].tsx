@@ -15,8 +15,8 @@ export default function OrderConfirmation() {
         try {
           const data = await ordersApi.get(orderNumber as string);
           setOrder(data);
-        } catch (error) {
-          console.error('Failed to fetch order:', error);
+        } catch {
+          // Silently handle error
         } finally {
           setLoading(false);
         }

@@ -25,7 +25,6 @@ export default function AdminOrders() {
         });
         setOrders(response.data.orders);
       } catch (error) {
-        console.error('Failed to fetch orders:', error);
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           localStorage.removeItem('admin_token');
           router.push('/admin/login');
@@ -47,8 +46,7 @@ export default function AdminOrders() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setOrders(orders.map(o => o.id === orderId ? { ...o, status, tracking_number: trackingNumber } as Order : o));
-    } catch (error) {
-      console.error('Failed to update order:', error);
+    } catch {
       alert('Failed to update order');
     }
   };

@@ -29,7 +29,6 @@ class EmailService:
     ) -> bool:
         """Send an email."""
         if not self.smtp_user or not self.smtp_password:
-            print("SMTP not configured, skipping email send")
             return False
         
         try:
@@ -48,8 +47,7 @@ class EmailService:
                 server.send_message(msg)
             
             return True
-        except Exception as e:
-            print(f"Failed to send email: {e}")
+        except Exception:
             return False
     
     async def send_order_confirmation(self, order: Order, db: Session) -> bool:

@@ -22,8 +22,8 @@ export default function AdminProducts() {
       try {
         const data = await productsApi.list();
         setProducts(data);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
+      } catch {
+        // Silently handle error
       } finally {
         setLoading(false);
       }
@@ -43,8 +43,7 @@ export default function AdminProducts() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProducts(products.filter(p => p.id !== productId));
-    } catch (error) {
-      console.error('Failed to delete product:', error);
+    } catch {
       alert('Failed to delete product');
     }
   };

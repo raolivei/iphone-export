@@ -1,0 +1,101 @@
+# iPhone Export - Cursor Rules
+
+## Workspace
+
+See `../workspace-config/docs/PROJECT_CONVENTIONS.md` for shared conventions (git workflow, CHANGELOG, Docker/GHCR, K8s, security).
+
+**Ports** (from `../workspace-config/ports/.env.ports`):
+
+- Frontend: `3004`
+- API: `8004`
+- PostgreSQL: `5436`
+- Redis: `6383`
+
+## Commands
+
+```bash
+# Development (Docker Compose - recommended)
+source ../workspace-config/ports/.env.ports
+docker-compose up                    # Start all services
+docker-compose up -d                 # Start detached
+
+# Alternative: Local development
+cd backend && python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn backend.app.server:app --reload --port 8004
+
+cd frontend && npm install && npm run dev
+
+# Database
+docker-compose exec api python backend/init_db.py  # Initialize
+docker-compose exec postgres psql -U postgres -d iphone_export  # Shell
+
+# Linting (run after changes)
+cd backend && ruff check . && ruff format .  # Python
+cd frontend && npm run lint                   # TypeScript
+```
+
+## Workflow
+
+1. Always lint/format after code changes
+2. Run tests before committing
+3. Update CHANGELOG.md for all changes
+4. Never run git commands at workspace root
+
+## Project Overview
+
+Ecommerce platform for selling iPhones with international shipping (Canada to Brazil). Stripe/PayPal payments, admin panel.
+
+```
+iphone-export/
+├── backend/           # FastAPI (Python)
+│   ├── api/routes/   # API endpoints
+│   ├── db/           # SQLAlchemy models
+│   ├── models/       # Pydantic models
+│   └── services/     # Payment, email, inventory
+├── frontend/         # Next.js (TypeScript)
+│   ├── pages/        # Next.js pages
+│   ├── store/        # Zustand cart state
+│   └── utils/        # API client
+└── k8s/              # Kubernetes manifests
+```
+
+## Code Style
+
+**Python**: See `backend/api/routes/products.py` for route patterns, `backend/services/payment.py` for Stripe integration.
+
+**TypeScript**: See `frontend/pages/checkout.tsx` for payment flow. Use Tailwind for styling.
+
+## Payment Integration
+
+- **Stripe**: Primary payment processor
+- **PayPal**: Alternative payment option
+- **Webhooks**: `backend/api/routes/payment_webhooks.py` handles payment events
+- **Testing**: Use Stripe/PayPal test mode credentials
+
+## Common Tasks
+
+### Adding Product
+
+1. Add to database via admin panel or init script
+2. Include: name, price, description, stock, images
+
+### Testing Payments
+
+1. Use Stripe test cards: `4242 4242 4242 4242`
+2. Use PayPal sandbox accounts
+3. Verify webhook handling
+
+## Docker Images
+
+- API: `ghcr.io/raolivei/iphone-export-api:<tag>`
+- Frontend: `ghcr.io/raolivei/iphone-export-frontend:<tag>`
+
+## Key Features
+
+- Product catalog with iPhone models
+- Shopping cart with Zustand
+- Stripe/PayPal checkout
+- Order tracking
+- Admin panel for inventory
+- International shipping support
