@@ -25,7 +25,9 @@ ENV NODE_ENV=production
 
 # Copy built application
 COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
+# Create public directory and copy contents (handles empty dir)
+RUN mkdir -p ./public
+COPY --from=builder /app/public/ ./public/
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
