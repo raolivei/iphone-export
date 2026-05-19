@@ -25,7 +25,6 @@ on:
         default: "latest"
 
 permissions:
-  # Required by raolivei/github-workflows docker-build.yml (nested job may request contents: write).
   contents: write
   packages: write
 
